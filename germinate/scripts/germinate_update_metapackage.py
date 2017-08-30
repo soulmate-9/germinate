@@ -166,6 +166,11 @@ def main(argv):
         dists = config.get(dist, 'dists').split()
     else:
         dists = [dist]
+    try:
+        archive_exceptions = config.get(dist, 'archive_base/exceptions').split()
+    except (NoSectionError, NoOptionError):
+        archive_exceptions = []
+
     components = config.get(dist, 'components').split()
 
     def seed_packages(germinator_method, structure, seed_name):
@@ -281,7 +286,7 @@ def main(argv):
         archive = germinate.archive.TagFile(
             dists, components, architecture,
             archive_base[architecture], source_mirrors=archive_base_default,
-            cleanup=True)
+            cleanup=True, archive_exceptions=archive_exceptions)
         germinator.parse_archive(archive)
         debootstrap_base = set(debootstrap_packages(architecture))
 
